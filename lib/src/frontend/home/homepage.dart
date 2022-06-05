@@ -78,6 +78,13 @@ class _MobileHomePage extends HookConsumerWidget {
                                   borderSide: BorderSide.none,
                                   borderRadius: BorderRadius.circular(10),
                                 ),
+                                prefixIcon: IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.search_rounded,
+                                  ),
+                                ),
+                                hintText: AppStrings.searchInput,
                               ),
                             ),
                           ),
