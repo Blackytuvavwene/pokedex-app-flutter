@@ -17,6 +17,9 @@ class _MobileHomePage extends HookConsumerWidget {
   const _MobileHomePage({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // watch providers
+    final pokList = ref.watch(pokemonListProvider);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: CustomScrollView(
@@ -122,17 +125,63 @@ class _MobileHomePage extends HookConsumerWidget {
               horizontal: 4.w,
               vertical: 2.h,
             ),
-            sliver: SliverGrid.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: 4.w,
-              crossAxisSpacing: 4.w,
-              childAspectRatio: 0.7,
-              children: List.generate(
-                20,
-                (index) => _PokemonCard(
-                  index: index,
-                ),
-              ),
+            sliver: pokList.when(
+              data: (data) {
+                // var list = data
+                //     .map((e) => {
+                //           {
+                //             'name': e['name'],
+                //             'image': e['image'],
+                //             'id': e['index'],
+                //           }
+                //         })
+                //     .toList();
+
+                // list.toList();
+                return SliverGrid.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 4.w,
+                    crossAxisSpacing: 4.w,
+                    childAspectRatio: 0.7,
+                    children: [
+                      for (var pok in data)
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/details',
+                              arguments: pok,
+                            );
+                          },
+                          child: _PokemonCard(
+                            index: pok['index'],
+                            name: pok['name'],
+                            img: pok['image'],
+                            pokType: pok['type'],
+                          ),
+                        ),
+                    ]);
+              },
+              error: (error, stack) {
+                return SliverToBoxAdapter(
+                  child: Center(
+                    child: Text(
+                      stack.toString(),
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 14.sp,
+                      ),
+                    ),
+                  ),
+                );
+              },
+              loading: () {
+                return const SliverToBoxAdapter(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              },
             ),
           ),
         ],
@@ -142,23 +191,117 @@ class _MobileHomePage extends HookConsumerWidget {
 }
 
 class _PokemonCard extends HookConsumerWidget {
-  const _PokemonCard({Key? key, this.index}) : super(key: key);
+  const _PokemonCard({
+    Key? key,
+    this.index,
+    this.img,
+    this.name,
+    this.pokType,
+  }) : super(key: key);
   final int? index;
+  final String? img;
+  final String? name;
+  final String? pokType;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // function to show pokemon id count
+    String count(index) {
+      if (index.toString().length == 1) {
+        return '00$index';
+      } else if (index.toString().length == 2) {
+        return '0$index';
+      } else {
+        return index.toString();
+      }
+    }
+
+// function to change card color based on pokemon type
+    Color type(type) {
+      if (type == 'bug') {
+        return const Color(0xFF3B9950);
+      } else if (type == 'dark') {
+        return const Color(0xFF5A5979);
+      } else if (type == 'dragon') {
+        return const Color(0xFF60CAD9);
+      } else if (type == 'electric') {
+        return const Color(0xFFFBFB70);
+      } else if (type == 'fairy') {
+        return const Color(0xFFEA1369);
+      } else if (type == 'fighting') {
+        return const Color(0xFFEF6138);
+      } else if (type == 'fire') {
+        return const Color(0xFFFC4C5A);
+      } else if (type == 'flying') {
+        return const Color(0xFF93B2C7);
+      } else if (type == 'ghost') {
+        return const Color(0xFF906790);
+      } else if (type == 'grass') {
+        return const Color(0xFF27CB4F);
+      } else if (type == 'ground') {
+        return const Color(0xFF6E491F);
+      } else if (type == 'ice') {
+        return const Color(0xFFD7F0FA);
+      } else if (type == 'normal') {
+        return const Color(0xFFC999A7);
+      } else if (type == 'poison') {
+        return const Color(0xFF9B69D9);
+      } else if (type == 'psychic') {
+        return const Color(0xFFF71C91);
+      } else if (type == 'rock') {
+        return const Color(0xFF8B3E21);
+      } else if (type == 'steel') {
+        return const Color(0xFF42BD94);
+      } else if (type == 'water') {
+        return const Color(0xFF86A9FA);
+      } else {
+        return AppColors.lightGreyGreen;
+      }
+    }
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.red,
+        color: type(pokType),
         borderRadius: BorderRadius.circular(15),
       ),
       height: 18.h,
       width: 10.w,
       child: Center(
-        child: Text(
-          index.toString(),
-          style: const TextStyle(color: Colors.white),
-        ),
-      ),
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            flex: 4,
+            child: Image.network(
+              img!,
+              height: 100.h,
+              width: 150.w,
+              scale: 0.5,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              upperCaseFirstLetter(name!) ?? '',
+              style: TextStyle(
+                color: Colors.black54,
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 0.1.h,
+          ),
+          Expanded(
+            child: Text(
+              count(index) ?? '',
+              style: TextStyle(
+                color: Colors.black45,
+                fontSize: 14.sp,
+              ),
+            ),
+          ),
+        ],
+      )),
     );
   }
 }
