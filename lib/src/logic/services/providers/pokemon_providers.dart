@@ -41,7 +41,7 @@ final pokemonDataProvider =
   Future<PokemonData> getPokeData() async {
     try {
       await Future.delayed(const Duration(seconds: 4));
-      return await repository.getPokemonData(id: 'pokeId');
+      return await repository.getPokemonData(id: pokeId);
     } catch (e) {
       rethrow;
     }

@@ -292,6 +292,7 @@ class DetailsPage extends HookConsumerWidget {
         error: (error, stackTrace) {
           return _DetailsPageError(
             error: error,
+            id: args['index'].toString(),
           );
         },
         loading: () {
@@ -350,15 +351,20 @@ class _DetailsPageLoading extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List<Widget>.generate(4, (index) {
                   return Expanded(
-                    child: Shimmer.fromColors(
-                      highlightColor: Colors.white54,
-                      baseColor: Colors.grey.shade300,
-                      child: Container(
-                        height: 3.h,
-                        width: 90.w,
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(25),
+                    child: Padding(
+                      padding: EdgeInsets.all(
+                        3.w,
+                      ),
+                      child: Shimmer.fromColors(
+                        highlightColor: Colors.white54,
+                        baseColor: Colors.grey.shade300,
+                        child: Container(
+                          height: 3.h,
+                          width: 90.w,
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(25),
+                          ),
                         ),
                       ),
                     ),
@@ -391,14 +397,18 @@ class _DetailsPageLoading extends StatelessWidget {
 }
 
 // page to show when pokemon getting pokemon data failed
-class _DetailsPageError extends StatelessWidget {
+class _DetailsPageError extends HookConsumerWidget {
   const _DetailsPageError({
     Key? key,
     this.error,
+    this.id,
   }) : super(key: key);
   final Object? error;
+  final String? id;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+//watch providers
+
     return Container(
       height: 100.h,
       width: 100.w,
@@ -409,14 +419,33 @@ class _DetailsPageError extends StatelessWidget {
       child: Center(
         child: SizedBox(
           width: 70.w,
-          child: Text(
-            '$error',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.w900,
-              color: Colors.red.shade900,
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '$error',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.red.shade900,
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  ref.refresh(pokemonDataProvider(id!));
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.redAccent.shade100,
+                ),
+                child: Text(
+                  'Retry',
+                  style: TextStyle(
+                    color: Colors.red.shade900,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
