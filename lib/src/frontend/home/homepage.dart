@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pokedex_app_flutter/src/src.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 
 class HomePage extends HookConsumerWidget {
@@ -153,34 +154,67 @@ class _MobileHomePage extends HookConsumerWidget {
                               arguments: pok,
                             );
                           },
-                          child: _PokemonCard(
-                            index: pok['index'],
-                            name: pok['name'],
-                            img: pok['image'],
-                            pokType: pok['type'],
+                          child: Hero(
+                            tag: pok['index'],
+                            child: _PokemonCard(
+                              index: pok['index'],
+                              name: pok['name'],
+                              img: pok['image'],
+                              pokType: pok['type'],
+                            ),
                           ),
                         ),
                     ]);
               },
               error: (error, stack) {
-                return SliverToBoxAdapter(
-                  child: Center(
-                    child: Text(
-                      stack.toString(),
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                  ),
-                );
+                var data = [0, 1, 2, 3, 4, 5];
+                return SliverGrid.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 4.w,
+                    crossAxisSpacing: 4.w,
+                    childAspectRatio: 0.7,
+                    children: [
+                      for (var pok in data)
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/details',
+                              arguments: pok,
+                            );
+                          },
+                          child: Shimmer.fromColors(
+                            highlightColor: Colors.black,
+                            baseColor: Colors.grey.shade500,
+                            child: const _PokemonCard(),
+                          ),
+                        ),
+                    ]);
               },
               loading: () {
-                return const SliverToBoxAdapter(
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
+                var data = [0, 1, 2, 3, 4, 5];
+                return SliverGrid.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 4.w,
+                    crossAxisSpacing: 4.w,
+                    childAspectRatio: 0.7,
+                    children: [
+                      for (var pok in data)
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/details',
+                              arguments: pok,
+                            );
+                          },
+                          child: Shimmer.fromColors(
+                            highlightColor: Colors.white54,
+                            baseColor: Colors.grey.shade300,
+                            child: const _PokemonCard(),
+                          ),
+                        ),
+                    ]);
               },
             ),
           ),
@@ -271,16 +305,18 @@ class _PokemonCard extends HookConsumerWidget {
         children: [
           Expanded(
             flex: 4,
-            child: Image.network(
-              img!,
-              height: 100.h,
-              width: 150.w,
-              scale: 0.5,
-            ),
+            child: img != null
+                ? Image.network(
+                    '$img',
+                    height: 100.h,
+                    width: 150.w,
+                    scale: 0.5,
+                  )
+                : const SizedBox(),
           ),
           Expanded(
             child: Text(
-              upperCaseFirstLetter(name!) ?? '',
+              upperCaseFirstLetter('$name') ?? '',
               style: TextStyle(
                 color: Colors.black54,
                 fontSize: 16.sp,
