@@ -16,27 +16,6 @@ class DetailsPage extends HookConsumerWidget {
       pokemonDataProvider(args['index'].toString()),
     );
 
-    // list of details to show
-    // final details = [
-    //   {
-    //     'title': 'Height',
-    //     'value': pokemonData.value?.height,
-    //   },
-    //   {
-    //     'title': 'Weight',
-    //     'value': pokemonData.value?.weight,
-    //   },
-    //   {
-    //     'title': 'Abilities',
-    //     'value':
-    //         pokemonData.value?.abilities?.map((e) => e.ability?.name).toList(),
-    //   },
-    //   {
-    //     'title': 'Types',
-    //     'value': pokemonData.value?.types?.map((e) => e.type?.name).toList(),
-    //   },
-    // ];
-
     // tabs list
     final tabs = [
       'Details',
@@ -200,6 +179,28 @@ class DetailsPage extends HookConsumerWidget {
       ),
       body: pokemonData.when(
         data: (data) {
+          //    list of details to show
+          final details = [
+            {
+              'title': 'Height',
+              'value': pokemonData.value?.height,
+            },
+            {
+              'title': 'Weight',
+              'value': pokemonData.value?.weight,
+            },
+            {
+              'title': 'Abilities',
+              'value': pokemonData.value?.abilities
+                  ?.map((e) => e.ability?.name)
+                  .toList(),
+            },
+            {
+              'title': 'Types',
+              'value':
+                  pokemonData.value?.types?.map((e) => e.type?.name).toList(),
+            },
+          ];
           return SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -282,8 +283,66 @@ class DetailsPage extends HookConsumerWidget {
                   height: 3.h,
                 ),
                 SizedBox(
-                  height: 30.h,
-                  child: Text(tabIndex.value.toString()),
+                  height: 40.h,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (tabIndex.value == 0)
+                        SizedBox(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Description',
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 3.h,
+                              ),
+                              SizedBox(
+                                height: 20.h,
+                                width: 100.w,
+                                child: Card(
+                                  color: type(data.types?.first.type?.name),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      for (var detail in details)
+                                        Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(detail['title'].toString()),
+                                          ],
+                                        )
+                                    ],
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      else if (tabIndex.value == 1)
+                        SizedBox(
+                          height: 1.h,
+                        )
+                      else if (tabIndex.value == 2)
+                        SizedBox(
+                          height: 1.h,
+                        )
+                      else if (tabIndex.value == 3)
+                        SizedBox(
+                          height: 1.h,
+                        )
+                      else if (tabIndex.value == 4)
+                        SizedBox(
+                          height: 1.h,
+                        ),
+                    ],
+                  ),
                 )
               ],
             ),
