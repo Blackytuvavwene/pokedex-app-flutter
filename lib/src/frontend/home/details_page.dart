@@ -263,6 +263,7 @@ class DetailsPage extends HookConsumerWidget {
                         return InkWell(
                           onTap: () {
                             tabIndex.value = index;
+                            print(data.stats?.map((e) => e.stat?.url).toList());
                           },
                           child: Text(
                             tabs[index],
@@ -292,31 +293,58 @@ class DetailsPage extends HookConsumerWidget {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                'Description',
-                                style: TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 3.h,
-                              ),
                               SizedBox(
                                 height: 20.h,
                                 width: 100.w,
                                 child: Card(
                                   color: type(data.types?.first.type?.name),
+                                  margin: EdgeInsets.symmetric(
+                                    horizontal: 4.w,
+                                  ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
                                     children: [
                                       for (var detail in details)
-                                        Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(detail['title'].toString()),
-                                          ],
+                                        Expanded(
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              SizedBox(
+                                                height: 5.h,
+                                              ),
+                                              Text(
+                                                detail['title'].toString(),
+                                                style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontSize: 16.sp,
+                                                  fontWeight: FontWeight.w900,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 3.h,
+                                              ),
+                                              if (detail['value'] is List)
+                                                for (var value
+                                                    in detail['value'] as List)
+                                                  Text(
+                                                    value.toString(),
+                                                    style: TextStyle(
+                                                      color: Colors.black54,
+                                                      fontSize: 12.sp,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  )
+                                              else
+                                                Text(
+                                                  detail['value'].toString(),
+                                                ),
+                                            ],
+                                          ),
                                         )
                                     ],
                                   ),
@@ -327,7 +355,29 @@ class DetailsPage extends HookConsumerWidget {
                         )
                       else if (tabIndex.value == 1)
                         SizedBox(
-                          height: 1.h,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              ref
+                                  .watch(pokemonStatListDataProvider(data.stats
+                                      ?.map((e) => e.stat?.url)
+                                      .toList() as List<String?>))
+                                  .when(
+                                data: (data) {
+                                  return Text('${data.stats?.last.name}');
+                                },
+                                error: (error, statckTrace) {
+                                  return Text(error.toString());
+                                },
+                                loading: () {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                },
+                              ),
+                              Text(data.stats![3].stat!.url.toString()),
+                            ],
+                          ),
                         )
                       else if (tabIndex.value == 2)
                         SizedBox(

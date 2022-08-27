@@ -14,7 +14,7 @@ class PokeApi {
       Uri.parse('$url$endpoint/?limit=25'),
     );
     if (response.statusCode != 200) {
-      throw 'Error retrieving pokemon list ${response.statusCode}';
+      throw response.body;
     }
     return builder(response.body);
   }
@@ -28,7 +28,21 @@ class PokeApi {
       Uri.parse('${url}pokemon/$id/'),
     );
     if (response.statusCode != 200) {
-      throw 'Error retrieving pokemon list ${response.statusCode}';
+      throw response.body;
+    }
+    return builder(response.body);
+  }
+
+  // get pokemon stat data
+  static Future<T> getPokemonStatData<T>({
+    required String statUrl,
+    required T Function(String json) builder,
+  }) async {
+    final Response response = await get(
+      Uri.parse(statUrl),
+    );
+    if (response.statusCode != 200) {
+      throw response.body;
     }
     return builder(response.body);
   }

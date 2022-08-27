@@ -50,13 +50,47 @@ final pokemonDataProvider =
   return getPokeData();
 });
 
-// class PokeListState extends StateNotifier<AsyncValue<List>> {
-//   PokeListState() : super(const AsyncValue.loading());
-// final _repository = ref.read(pokemonRepositoryProvider);
+// provider to get pokemon stat data
+final pokemonStatDataProvider =
+    FutureProvider.family.autoDispose<PokemonStatData, String>((ref, statUrl) {
+  // watch pokemon repository provider
+  final repository = ref.watch(pokemonRepositoryProvider);
 
-//   Future<void> getPokeList() async {
-//     state = AsyncLoading();
+  Future<PokemonStatData> getPokeStatData() async {
+    try {
+      await Future.delayed(const Duration(seconds: 4));
+      return await repository.getPokemonStatData(statUrl: statUrl);
+    } catch (e) {
+      rethrow;
+    }
+  }
 
-//     state = AsyncValue.guard(() => _h.getPokeList());
-//   }
-// }
+  return getPokeStatData();
+});
+
+// provider to get pokemon stat list data
+final pokemonStatListDataProvider = FutureProvider.family
+    .autoDispose<PokemonStatListData, List<String?>>((ref, statUrl) {
+  // watch pokemon repository provider
+  final repository = ref.watch(pokemonRepositoryProvider);
+
+  Future<PokemonStatListData> getPokeStatListData() async {
+    try {
+      await Future.delayed(const Duration(seconds: 4));
+      final list = statUrl
+          .map(
+            (e) => ref
+                .watch(
+                  pokemonStatDataProvider(e!),
+                )
+                .value,
+          )
+          .toList();
+      return PokemonStatListData(stats: list as List<PokemonStatData>);
+    } catch (e) {
+      throw 'Failed to get stat list';
+    }
+  }
+
+  return getPokeStatListData();
+});
